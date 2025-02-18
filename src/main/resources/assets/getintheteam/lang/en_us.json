@@ -1,0 +1,6 @@
+{
+  "item.getintheteam.flag": "Team Flag",
+  "tooltip.getintheteam.flag.tooltip": "You must be §4owner §fand in a §4team §fto add entity to your team",
+  "tooltip.getintheteam.flag.tooltip2": "§aRClick to add to your team",
+  "tooltip.getintheteam.flag.tooltip3": "§aShift + RClick to remove from your team"
+}

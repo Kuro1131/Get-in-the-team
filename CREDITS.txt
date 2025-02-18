@@ -1,3 +1,9 @@
+Credit to original owner: min2222
+
+Thanks you for inspiration for the mod and a place to start building my fork
+
+=========================================================================
+
 Minecraft Forge: Credits/Thank You
 
 Forge is a set of tools and modifications to the Minecraft base game code to assist 
