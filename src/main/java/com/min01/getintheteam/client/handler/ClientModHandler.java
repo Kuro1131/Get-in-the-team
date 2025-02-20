@@ -12,5 +12,6 @@ public class ClientModHandler {
     @SubscribeEvent
     public static void registerKeysBinding(RegisterKeyMappingsEvent event){
         event.register(keybindings.INSTANCE.openTeamMenu);
+        event.register(keybindings.INSTANCE.testServer);
     }
 }

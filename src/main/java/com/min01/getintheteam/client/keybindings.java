@@ -14,12 +14,17 @@ public class keybindings {
     private static final String CATEGORY = "key.categories." + Getintheteam.MODID;
 
     public final KeyMapping openTeamMenu = new KeyMapping(
-            "key." + Getintheteam.MODID + ".openTeamMenu",
+            "key." + Getintheteam.MODID + ".openTeam",
             KeyConflictContext.IN_GAME,
             InputConstants.getKey(InputConstants.KEY_RSHIFT,-1),
             CATEGORY
     );
 
-
+    public final KeyMapping testServer = new KeyMapping(
+            "key." + Getintheteam.MODID + ".testSer",
+            KeyConflictContext.IN_GAME,
+            InputConstants.getKey(InputConstants.KEY_RCONTROL,-1),
+            CATEGORY
+    );
 
 }

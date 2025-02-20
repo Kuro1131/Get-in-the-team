@@ -2,7 +2,6 @@ package com.min01.getintheteam;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
