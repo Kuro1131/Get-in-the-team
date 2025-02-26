@@ -65,8 +65,6 @@ public class screen extends Screen {
         if (!isInit)
         {
             System.out.println("Screen not init");
-            onClose();
-            return;
         }
 
         System.out.println("Screen render background");
