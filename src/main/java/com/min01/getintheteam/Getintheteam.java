@@ -44,6 +44,8 @@ public class Getintheteam
 	private void addCreative(BuildCreativeModeTabContentsEvent event) {
 		if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
 			event.accept(ItemRegisterHandler.FLAG);
+			event.accept(ItemRegisterHandler.BANDAGE);
+			event.accept(ItemRegisterHandler.GOLDEN_BANDAGE);
 		}
 	}
 
@@ -65,6 +67,23 @@ public class Getintheteam
 				(long) intArray[3] & 0xFFFFFFFFL);
 	}
 
+	public static boolean isOwner(Entity entity, Player player){
+		String ownerUUID;
+		if (entity.getType().toString().contains("entity.modulargolems"))
+		{
+			ownerUUID = entity.serializeNBT().getCompound("auto-serial").getString("owner");
+		}
+		else{
+			ownerUUID = IntArrayToUUID(entity.serializeNBT().getIntArray("Owner"));
+		}
+
+		if (!ownerUUID.equals(player.getStringUUID())) {
+			player.sendSystemMessage(Component.literal("You are not the owner").withStyle(ChatFormatting.LIGHT_PURPLE).withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.UNDERLINE));
+			return false;
+		}
+		return true;
+	}
+
 	public static void AddToTeam(Entity entity){
 		if (entity.getServer() == null) {
 			return;
@@ -84,20 +103,8 @@ public class Getintheteam
 		if (entity.getServer() == null) {
 			return;
 		}
+		if (!isOwner(entity, player)) return;
 
-		String ownerUUID;
-		if (entity.getType().toString().contains("entity.modulargolems"))
-		{
-			ownerUUID = entity.serializeNBT().getCompound("auto-serial").getString("owner");
-		}
-		else{
-			ownerUUID = IntArrayToUUID(entity.serializeNBT().getIntArray("Owner"));
-		}
-
-		if (!ownerUUID.equals(player.getStringUUID())) {
-			player.sendSystemMessage(Component.literal("You are not the owner").withStyle(ChatFormatting.LIGHT_PURPLE).withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.UNDERLINE));
-			return;
-		}
 		if(player.getTeam() != null) {
 				player.getServer().getScoreboard().addPlayerToTeam(entity.getStringUUID(), player.getServer().getScoreboard().getPlayerTeam(player.getTeam().getName()));
 				player.sendSystemMessage(Component.literal("Entity added to your team").withStyle(ChatFormatting.GREEN).withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.UNDERLINE));
@@ -111,20 +118,7 @@ public class Getintheteam
 		if (entity.getServer() == null) {
 			return;
 		}
-
-		String ownerUUID;
-		if (entity.getType().toString().contains("entity.modulargolems"))
-		{
-			ownerUUID = entity.serializeNBT().getCompound("auto-serial").getString("owner");
-		}
-		else{
-			ownerUUID = IntArrayToUUID(entity.serializeNBT().getIntArray("Owner"));
-		}
-
-		if (!ownerUUID.equals(player.getStringUUID())) {
-			player.sendSystemMessage(Component.literal("You are not the owner").withStyle(ChatFormatting.LIGHT_PURPLE).withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.UNDERLINE));
-			return;
-		}
+		 if (!isOwner(entity, player)) return;
 
 		if (entity.getTeam() != null)
 		{

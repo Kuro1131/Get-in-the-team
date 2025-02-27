@@ -20,6 +20,8 @@ public class Sgetteamlist {
 
     private String Steamname;
     Collection<String> Cteamname;
+    private UUID uuid;
+    private boolean boo;
     public static final Logger logger = LogManager.getLogger();
 
     public Sgetteamlist(){}
@@ -28,16 +30,24 @@ public class Sgetteamlist {
         this.Cteamname = teamname;
     }
 
+    public Sgetteamlist(UUID uuid) {
+        this.uuid = uuid;
+    }
+    public Sgetteamlist(boolean boo) {
+        this.boo = boo;
+    }
     public Sgetteamlist(String teamname) {
         this.Steamname = teamname;
     }
 
     public Sgetteamlist(FriendlyByteBuf buf) {
-//        this(buf.readUtf());
+        buf.writeUUID(uuid);
+        buf.writeBoolean(boo);
     }
 
     public void encode(FriendlyByteBuf buf) {
-//        buf.writeUtf(Steamname);
+        buf.writeUUID(uuid);
+        buf.writeBoolean(boo);
     }
 
     //Receive packet from player and print team name to system log
