@@ -1,7 +1,13 @@
+1.2.0
+====
+ - Add feature for mob that has "player owner" a 60 second bleedout when slain
+ - Add Bandage/Golden Bandage to heal bleedout mobs
+
 1.1.0
 ====
  - Add support for summon entity from mod like: Modular Golem, Touhou Little Maid
  - Add Item for manual add/remove entity from team
+
 1.0.0
 ====
  - Initial fork
