@@ -2,10 +2,16 @@ package com.min01.getintheteam;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.min01.getintheteam.items.item.FlagItem;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
@@ -40,4 +46,24 @@ public class EventHandlerForge
 
 	}
 
+	/**
+	 * Makes the Flag item take priority over the entity's own right-click behavior.
+	 * Vanilla calls entity.interact() BEFORE item.interactLivingEntity(), so modded
+	 * entities like the saintdragon (riding) consume the interaction first. This
+	 * event fires before entity.interact() and cancels it when the flag is held.
+	 */
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
+		ItemStack stack = event.getItemStack();
+		if (stack.getItem() instanceof FlagItem) {
+			Player player = event.getEntity();
+			Entity target = event.getTarget();
+			if (player.isCrouching()) {
+				Getintheteam.RemoveFromTeam(target, player);
+			} else {
+				Getintheteam.AddToTeam(target, player);
+			}
+			event.setCanceled(true);
+		}
+	}
 }
