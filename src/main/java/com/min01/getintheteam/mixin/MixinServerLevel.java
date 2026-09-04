@@ -1,6 +1,7 @@
 package com.min01.getintheteam.mixin;
 
 import com.min01.getintheteam.EventHandlerForge;
+import com.min01.getintheteam.Getintheteam;
 import java.util.function.Supplier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,6 +17,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.WritableLevelData;
 import net.minecraft.world.scores.PlayerTeam;
+
+import static com.min01.getintheteam.Getintheteam.FindPlayerTeam;
 
 
 @Mixin(ServerLevel.class)
@@ -38,11 +41,13 @@ public abstract class MixinServerLevel extends Level
 				Entity entity = EventHandlerForge.ENTITY_MAP.get(clazz.hashCode());
 				if(entity != null)
 				{
-					if(entity.getTeam() != null && entity.getServer() != null)
+					// Robust team lookup: entity's own team first, then its class-registered team
+					PlayerTeam team = Getintheteam.FindEntityTeam(entity);
+					if (team == null) team = Getintheteam.FindClassTeam(entity);
+					if (team == null) team = Getintheteam.FindClassTeam(p_8837_);
+					if (team != null && entity.getServer() != null)
 					{
-						PlayerTeam team = entity.getServer().getScoreboard().getPlayerTeam(entity.getTeam().getName());
-						if (team != null)
-						{entity.getServer().getScoreboard().addPlayerToTeam(p_8837_.getStringUUID(), team);}
+						entity.getServer().getScoreboard().addPlayerToTeam(p_8837_.getStringUUID(), team);
 					}
 				}
 			}
@@ -51,11 +56,13 @@ public abstract class MixinServerLevel extends Level
 				Entity entity = EventHandlerForge.ENTITY_MAP2.get(clazz.hashCode());
 				if(entity != null)
 				{
-					if(entity.getTeam() != null && entity.getServer() != null)
+					// Robust team lookup: entity's own team first, then its class-registered team
+					PlayerTeam team = Getintheteam.FindEntityTeam(entity);
+					if (team == null) team = Getintheteam.FindClassTeam(entity);
+					if (team == null) team = Getintheteam.FindClassTeam(p_8837_);
+					if (team != null && entity.getServer() != null)
 					{
-						PlayerTeam team = entity.getServer().getScoreboard().getPlayerTeam(entity.getTeam().getName());
-						if (team != null)
-						{entity.getServer().getScoreboard().addPlayerToTeam(p_8837_.getStringUUID(), team);}
+						entity.getServer().getScoreboard().addPlayerToTeam(p_8837_.getStringUUID(), team);
 					}
 				}
 			}

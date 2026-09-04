@@ -1,69 +1,75 @@
 package com.min01.getintheteam.network;
 
-
-import com.min01.getintheteam.client.handler.ClientPacketHandler;
+import com.min01.getintheteam.Getintheteam;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
 import net.minecraft.server.level.ServerPlayer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.scores.Team;
+import net.minecraftforge.network.NetworkEvent;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 
 public class Sgetteamlist {
 
-    private String Steamname;
-    Collection<String> Cteamname;
-    public static final Logger logger = LogManager.getLogger();
-
-    public Sgetteamlist(){}
-
-    public Sgetteamlist(Collection<String> teamname) {
-        this.Cteamname = teamname;
-    }
-
-    public Sgetteamlist(String teamname) {
-        this.Steamname = teamname;
-    }
+    public Sgetteamlist() {}
 
     public Sgetteamlist(FriendlyByteBuf buf) {
-//        this(buf.readUtf());
     }
 
     public void encode(FriendlyByteBuf buf) {
-//        buf.writeUtf(Steamname);
     }
 
-    //Receive packet from player and print team name to system log
+    //Receive packet from player, gather team member data, and send response back to client
     public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-        System.out.println("Handling Packet");
         contextSupplier.get().enqueueWork(() -> {
-            // Work that needs to be threadsafe (most work)
-            ServerPlayer player = contextSupplier.get().getSender();
-            ServerLevel level = contextSupplier.get().getSender().serverLevel();
-            Collection<String> collection = player.getTeam().getPlayers();
-            StringBuilder entityIdString = new StringBuilder();
-            collection.forEach(str -> {
-                if (str.matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")) {
-                    Entity entity = level.getEntity(UUID.fromString(str));
-                    if (entity != null) entityIdString.append(entity.getEncodeId()).append(",");
-                }else{
-                    entityIdString.append(str).append(",");
+            try {
+                ServerPlayer player = contextSupplier.get().getSender();
+                if (player == null) return;
+
+                List<TeamMemberData> teamMembers = new ArrayList<>();
+                boolean hasTeam = false;
+
+                Team team = player.getTeam();
+                if (team != null) {
+                    hasTeam = true;
+                    ServerLevel level = player.serverLevel();
+
+                    for (String memberId : team.getPlayers()) {
+                        String name = memberId;
+                        String uuid = memberId;
+                        String entityType = "";
+
+                        // Try to resolve as UUID (entity)
+                        try {
+                            UUID memberUUID = UUID.fromString(memberId);
+                            Entity entity = level.getEntity(memberUUID);
+                            if (entity != null) {
+                                name = entity.getName().getString();
+                                entityType = entity.getType().getDescriptionId();
+                            } else {
+                                // UUID exists but entity is not loaded - keep UUID for display
+                                name = "Unknown Entity";
+                            }
+                        } catch (IllegalArgumentException e) {
+                            // Not a UUID, it's a player name
+                            uuid = "";
+                            name = memberId;
+                        }
+
+                        teamMembers.add(new TeamMemberData(name, uuid, entityType));
+                    }
                 }
-            });
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientPacketHandler.handle(String.valueOf(entityIdString)));
+
+                // Send response back to the requesting player
+                PacketHandler.sendToPlayer(new Cgetteamlist(teamMembers, hasTeam), player);
+            } catch (Exception e) {
+                Getintheteam.logger.error("Failed to handle Sgetteamlist", e);
+            }
         });
         contextSupplier.get().setPacketHandled(true);
-
-
-//
-
-
     }
 }

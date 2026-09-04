@@ -1,7 +1,6 @@
 package com.min01.getintheteam.network;
 
 import com.min01.getintheteam.Getintheteam;
-import com.min01.getintheteam.client.handler.ClientPacketHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
@@ -18,10 +17,22 @@ public class PacketHandler {
             .simpleChannel();
 
     public static void registerSPackets() {
-        INSTANCE.messageBuilder(Sgetteamlist.class, NetworkDirection.PLAY_TO_SERVER.ordinal())
+        INSTANCE.messageBuilder(Sgetteamlist.class, 0, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(Sgetteamlist::encode)
                 .decoder(Sgetteamlist::new)
                 .consumerMainThread(Sgetteamlist::handle)
+                .add();
+
+        INSTANCE.messageBuilder(Skickmember.class, 1, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(Skickmember::encode)
+                .decoder(Skickmember::new)
+                .consumerMainThread(Skickmember::handle)
+                .add();
+
+        INSTANCE.messageBuilder(Cgetteamlist.class, 2, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(Cgetteamlist::encode)
+                .decoder(Cgetteamlist::new)
+                .consumerMainThread(Cgetteamlist::handle)
                 .add();
     }
 
@@ -30,14 +41,11 @@ public class PacketHandler {
         INSTANCE.sendToServer(message);
     }
 
-    public static void sendToPlayers(Object message, ServerPlayer player) {
-        INSTANCE.send((PacketDistributor.PacketTarget) message, PacketDistributor.PLAYER.with(() -> player));
+    public static void sendToPlayer(Object message, ServerPlayer player) {
+        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
     }
 
     public static void sendToAll(Object message) {
-        INSTANCE.send((PacketDistributor.PacketTarget) message, PacketDistributor.ALL.noArg());
+        INSTANCE.send(PacketDistributor.ALL.noArg(), message);
     }
-
-
-
 }
