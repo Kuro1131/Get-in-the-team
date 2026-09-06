@@ -86,7 +86,7 @@ public class Getintheteam
 			// Remember this class -> team so future re-spawns auto-join
 			CLASS_TEAM_MAP.put(entity.getClass(), team.getName());
 		}
-		else {logger.info("Entity have no team");}
+//		else {logger.info("Entity have no team");}
 
 	}
 
